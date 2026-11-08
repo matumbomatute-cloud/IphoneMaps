@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#0e1411" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="logo-mis-rutas.svg">
 <link rel="icon" type="image/png" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -241,6 +242,21 @@ textarea.input{resize:vertical;min-height:84px}
 .share-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:10px;padding:6px 8px 6px 10px;min-width:0}
 .share-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
 .modal .card{max-height:100%;overflow:auto}
+.profile-avatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:var(--surface-2);border:2px solid var(--line);font-family:var(--f-display);font-size:24px;font-weight:700;color:var(--accent);flex:none}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-row{display:flex;align-items:center;gap:12px}
+.map-style{position:absolute;z-index:500;top:12px;right:max(16px,env(safe-area-inset-right,0px));height:46px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:0 10px;display:flex;align-items:center;gap:6px}
+.map-style span{font-size:11px;color:var(--muted);font-weight:600}
+.map-style select{border:0;background:transparent;color:var(--ink);font:600 13px var(--f-body);outline:none;max-width:112px}
+.welcome{position:absolute;inset:0;z-index:1700;background:rgba(10,18,14,.58);display:grid;place-items:center;padding:20px}
+.welcome-card{width:min(100%,460px);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:26px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.welcome-logo{width:104px;height:104px;color:var(--accent)}
+.welcome-card h2{margin:0;font:700 29px/1.1 var(--f-display);letter-spacing:-.03em}
+.welcome-card p{margin:0;color:var(--muted);font-size:15px}
+.welcome-actions{width:100%;display:grid;gap:9px;margin-top:5px}
+.welcome-actions .btn{width:100%;min-height:48px}
+.welcome-card .btn.ghost{border:0;background:transparent}
+@media(max-width:620px){.title-pill{max-width:calc(100vw - 190px);gap:6px;padding:0 10px}.title-pill h1{font-size:15px}.title-pill .count{font-size:10px}.map-style{right:10px;top:66px;height:40px}.map-style select{max-width:94px}.welcome-card{padding:24px 20px}.welcome-card h2{font-size:26px}}
 .side-foot{max-height:46%;overflow:auto}
 .acct{display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .acct-row{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -283,6 +299,7 @@ textarea.input{resize:vertical;min-height:84px}
     <header class="topbar">
       <button class="menu-btn" id="menuBtn" type="button" aria-label="Abrir o cerrar el menú" aria-expanded="true" aria-controls="side"></button>
       <div class="title-pill"><h1>Sobre Mis Rutas</h1><span class="count" id="topCount"></span></div>
+      <label class="map-style"><span>Mapa</span><select id="mapStyle" aria-label="Tipo de mapa"><option value="standard">Predeterminado</option><option value="satellite">Satélite</option><option value="hybrid">Híbrido</option><option value="relief">Relieve</option></select></label>
     </header>
     <div class="mapctl" id="mapctl">
       <button type="button" id="zin" aria-label="Acercar"></button>
@@ -291,11 +308,24 @@ textarea.input{resize:vertical;min-height:84px}
       <button type="button" id="locBtn" aria-label="Ir a mi ubicación"></button>
     </div>
     <button class="fab" id="fab" type="button"></button>
-    <div class="attrib">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></div>
+    <div class="attrib" id="mapAttribution"></div>
     <section class="sheet" id="sheet" hidden aria-live="polite"></section>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="lightbox" id="lightbox" hidden></div>
+    <section class="welcome" id="welcome" hidden aria-labelledby="welcomeTitle">
+      <div class="welcome-card">
+        <svg class="welcome-logo" viewBox="0 0 100 100" role="img" aria-label="Logo de Mis Rutas"><circle cx="50" cy="50" r="47" fill="currentColor" opacity=".1"/><path d="M13 70 38 34l14 20 9-12 26 28H13Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="m35 70 17-24 23 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 78h50" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="68" cy="28" r="5" fill="currentColor"/></svg>
+        <h2 id="welcomeTitle">Bienvenido a Mis Rutas</h2>
+        <p>No dejes nada atrás. Guarda tus lugares, rutas y recuerdos al aire libre.</p>
+        <div class="welcome-actions">
+          <button class="btn primary" id="welcomeLogin" type="button">Iniciar sesión</button>
+          <button class="btn" id="welcomeSignup" type="button">Crear cuenta nueva</button>
+          <button class="btn ghost" id="welcomeGuest" type="button">Explorar sin cuenta</button>
+        </div>
+      </div>
+    </section>
     <div class="modal" id="authBox" hidden></div>
+    <input type="file" id="avatarFile" class="hidden-input" accept="image/*" tabindex="-1" aria-hidden="true">
   </main>
 </div>
 <input type="file" id="trackFile" class="hidden-input" tabindex="-1" aria-hidden="true">
@@ -485,8 +515,30 @@ function readImage(file){return new Promise(function(res,rej){
 /* ---------- Mapa ---------- */
 var map=L.map('map',{zoomControl:false,attributionControl:false,worldCopyJump:true,minZoom:2}).setView([40.2,-3.7],6);
 var tileErr=0;
-var tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-tiles.on('tileerror',function(){tileErr++;if(tileErr===4)toast('No se cargan las imágenes del mapa (¿sin conexión?). Tus puntos y rutas siguen en su sitio.',6000);});
+var mapLayerName=localStorage.getItem('sml-map-layer')||'standard';
+var tiles=null,hybridLabels=null;
+var mapLayers={
+  standard:{url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'},
+  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maxZoom:19,attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'},
+  hybrid:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maxZoom:19,attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'},
+  relief:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',maxZoom:19,attribution:'Tiles © Esri — Sources: Esri, USGS, NOAA, and the GIS User Community'}
+};
+function setMapLayer(name){
+  if(!mapLayers[name])name='standard';
+  mapLayerName=name;localStorage.setItem('sml-map-layer',name);
+  if(tiles)map.removeLayer(tiles);
+  if(hybridLabels){map.removeLayer(hybridLabels);hybridLabels=null;}
+  var layer=mapLayers[name];
+  var credit=$('#mapAttribution');if(credit)credit.innerHTML=layer.attribution;
+  tiles=L.tileLayer(layer.url,{maxZoom:layer.maxZoom,attribution:layer.attribution}).addTo(map);
+  tiles.on('tileerror',function(){tileErr++;if(tileErr===4)toast('No se cargan las imágenes del mapa (¿sin conexión o servicio temporalmente no disponible?). Tus puntos y rutas siguen en su sitio.',6000);});
+  if(name==='hybrid'){
+    hybridLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,transparent:true,attribution:'Labels © Esri'}).addTo(map);
+  }
+  tileErr=0;var select=$('#mapStyle');if(select)select.value=name;
+}
+setMapLayer(mapLayerName);
+$('#mapStyle').addEventListener('change',function(){setMapLayer(this.value);});
 var trackLayer=L.layerGroup().addTo(map),pinLayer=L.layerGroup().addTo(map),meLayer=L.layerGroup().addTo(map);
 
 function pinIcon(type,cls){
@@ -1126,8 +1178,20 @@ function wipeLocal(){
   persist();render();fitAll();
 }
 
+function profileMeta(){return session&&session.user&&session.user.user_metadata||{};}
+function profileName(){return [profileMeta().first_name,profileMeta().last_name].filter(Boolean).join(' ').trim();}
+function profileAvatarElement(){
+  var meta=profileMeta(),el=h('div',{class:'profile-avatar'},h('span',{text:(meta.first_name||session.user.email||'M').slice(0,1).toUpperCase()}));
+  if(meta.avatar_path&&sb)sb.storage.from('profile-avatars').createSignedUrl(meta.avatar_path,3600).then(function(r){if(!r.error&&r.data&&el.isConnected)el.replaceChildren(h('img',{src:r.data.signedUrl,alt:'Avatar'}));});
+  return el;
+}
+function updateGreeting(){var title=document.querySelector('.title-pill h1');if(title)title.textContent=profileMeta().first_name?'Hola '+profileMeta().first_name:'Sobre Mis Rutas';}
+function showWelcome(signedIn){
+  var w=$('#welcome');if(!w)return;
+  w.hidden=!!signedIn||localStorage.getItem('sml-welcome-seen')==='1';
+}
 function renderAcct(){
-  var box=$('#acct');box.replaceChildren();
+  var box=$('#acct');box.replaceChildren();updateGreeting();
   if(syncState==='init')return;
   if(syncState==='nocfg'){box.append(h('p',{class:'hint',style:'margin:0',text:'Sincronización sin configurar. Mira el paso de Supabase en LEEME.txt.'}));return;}
   if(syncState==='nolib'){box.append(h('p',{class:'hint',style:'margin:0',text:'No se pudo cargar el módulo de sincronización. Abre la app con conexión.'}));return;}
@@ -1142,8 +1206,12 @@ function renderAcct(){
   else if(syncState==='error')line='No se pudo sincronizar: '+syncMsg;
   else if(pend)line=pend+(pend===1?' cambio':' cambios')+' por subir';
   else line='Sincronizado'+(lastSyncAt?' a las '+new Date(lastSyncAt).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}):'');
+  var fullName=profileName();
   box.append(
-    h('div',{class:'acct-row'},h('span',{class:'acct-mail',text:session.user.email}),h('span',{class:'hint',text:line})),
+    h('div',{class:'profile-row'},
+      profileAvatarElement(),
+      h('div',{class:'acct-row'},h('span',{class:'acct-mail',text:fullName||session.user.email}),h('span',{class:'hint',text:line}))),
+    h('button',{class:'btn',type:'button',text:'Configuración de usuario',onclick:openProfileSettings}),
     h('button',{class:'btn',type:'button',html:icon('share',17)+'<span>Compartir con otras personas</span>',onclick:openShare}),
     h('div',{class:'row'},
       h('button',{class:'btn sm',type:'button',text:'Sincronizar ahora',onclick:function(){syncNow();}}),
@@ -1216,8 +1284,62 @@ function openShare(){
   if(navigator.onLine===false)err.textContent='Sin conexión. Los cambios de esta ventana necesitan internet.';
   else refresh();
 }
-function openAuth(){
-  var box=$('#authBox'),mode='in';
+function openProfileSettings(){
+  if(!sb||!session)return;
+  var box=$('#authBox'),meta=profileMeta(),avatarPath=meta.avatar_path||'',avatarData='';
+  var first=h('input',{class:'input',type:'text',autocomplete:'given-name',maxlength:'60',placeholder:'Nombre','aria-label':'Nombre',value:meta.first_name||''});
+  var last=h('input',{class:'input',type:'text',autocomplete:'family-name',maxlength:'80',placeholder:'Apellidos','aria-label':'Apellidos',value:meta.last_name||''});
+  var gender=h('select',{class:'input','aria-label':'Sexo'},h('option',{value:'',text:'Prefiero no indicarlo'}),h('option',{value:'femenino',text:'Femenino'}),h('option',{value:'masculino',text:'Masculino'}),h('option',{value:'otro',text:'Otro'}));gender.value=meta.gender||'';
+  var birth=h('input',{class:'input',type:'date','aria-label':'Fecha de nacimiento',value:meta.birth_date||''});
+  var avatarView=profileAvatarElement();
+  var file=h('input',{type:'file',accept:'image/*',class:'hidden-input'});
+  var choose=h('button',{class:'btn sm',type:'button',text:'Elegir foto',onclick:function(){file.click();}});
+  var remove=h('button',{class:'btn sm',type:'button',text:'Quitar foto',onclick:function(){avatarPath='';avatarData='';avatarView.replaceChildren(h('span',{text:(first.value||session.user.email||'M').slice(0,1).toUpperCase()}));}});
+  file.addEventListener('change',function(){var f=file.files&&file.files[0];if(!f)return;if(f.size>8*1024*1024){err.textContent='La foto debe pesar menos de 8 MB.';return;}readAvatar(f).then(function(data){avatarData=data;avatarPath=session.user.id+'/avatar.jpg';avatarView.replaceChildren(h('img',{src:data,alt:'Avatar personal'}));err.textContent='';}).catch(function(e){err.textContent=e.message;});});
+  var email=h('input',{class:'input',type:'email',autocomplete:'email',value:session.user.email||'',placeholder:'Correo electrónico','aria-label':'Correo electrónico'});
+  var password=h('input',{class:'input',type:'password',autocomplete:'new-password',minlength:'8',placeholder:'Nueva contraseña','aria-label':'Nueva contraseña (opcional)'});
+  var err=h('div',{class:'err',role:'alert'});
+  var save=h('button',{class:'btn primary',type:'submit',text:'Guardar perfil'});
+  var profileForm=h('form',{novalidate:true},
+    h('h2',{class:'card-title',text:'Configuración de usuario'}),
+    h('div',{class:'profile-row'},avatarView,h('div',{class:'row'},choose,remove)),
+    h('div',{class:'field'},h('label',{text:'Nombre'}),first),
+    h('div',{class:'field'},h('label',{text:'Apellidos'}),last),
+    h('div',{class:'field'},h('label',{text:'Sexo'}),gender),
+    h('div',{class:'field'},h('label',{text:'Fecha de nacimiento'}),birth),
+    save);
+  profileForm.addEventListener('submit',function(ev){
+    ev.preventDefault();err.textContent='';save.disabled=true;
+    var data=Object.assign({},meta,{first_name:first.value.trim(),last_name:last.value.trim(),gender:gender.value,birth_date:birth.value,avatar_path:avatarPath});
+    var upload=avatarData?fetch(avatarData).then(function(r){return r.blob();}).then(function(blob){return sb.storage.from('profile-avatars').upload(session.user.id+'/avatar.jpg',blob,{upsert:true,contentType:'image/jpeg'});}).then(function(r){if(r.error)throw r.error;}):Promise.resolve();
+    upload.then(function(){return sb.auth.updateUser({data:data});}).then(function(r){if(r.error)throw r.error;if(r.data.user)session.user=r.data.user;renderAcct();toast('Perfil guardado.');}).then(function(){
+      if(!avatarPath&&meta.avatar_path)return sb.storage.from('profile-avatars').remove([meta.avatar_path]).then(function(){});
+    }).then(function(){save.disabled=false;}).catch(function(e){save.disabled=false;err.textContent=errText(e);});
+  });
+  var emailGo=h('button',{class:'btn',type:'button',text:'Cambiar correo',onclick:function(){var mail=email.value.trim();if(!/^\S+@\S+\.\S+$/.test(mail)){err.textContent='Escribe un correo válido.';return;}emailGo.disabled=true;err.textContent='';sb.auth.updateUser({email:mail}).then(function(r){emailGo.disabled=false;if(r.error){err.textContent=errText(r.error);return;}err.textContent='Te enviamos un enlace para confirmar el cambio de correo.';}).catch(function(e){emailGo.disabled=false;err.textContent=errText(e);});}});
+  var passwordGo=h('button',{class:'btn',type:'button',text:'Cambiar contraseña',onclick:function(){if(password.value.length<8){err.textContent='Escribe una contraseña nueva de al menos 8 caracteres.';return;}passwordGo.disabled=true;err.textContent='';sb.auth.updateUser({password:password.value}).then(function(r){passwordGo.disabled=false;if(r.error){err.textContent=errText(r.error);return;}password.value='';err.textContent='Contraseña actualizada.';}).catch(function(e){passwordGo.disabled=false;err.textContent=errText(e);});}});
+  var mailCard=h('div',{class:'field'},h('label',{text:'Correo electrónico'}),email,emailGo);
+  var passCard=h('div',{class:'field'},h('label',{text:'Nueva contraseña'}),password,passwordGo);
+  box.replaceChildren(h('div',{class:'card'},profileForm,mailCard,passCard,err,h('button',{class:'btn',type:'button',text:'Cerrar',onclick:function(){box.hidden=true;}})));
+  box.hidden=false;
+}
+function readAvatar(file){return new Promise(function(resolve,reject){var reader=new FileReader();reader.onload=function(){var img=new Image();img.onload=function(){var side=240,scale=Math.min(1,side/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.62));};img.onerror=function(){reject(new Error('No se pudo abrir la foto.'));};img.src=reader.result;};reader.onerror=function(){reject(new Error('No se pudo leer la foto.'));};reader.readAsDataURL(file);});}
+function requestPasswordReset(mail,err,button){
+  if(!/^\S+@\S+\.\S+$/.test(mail)){err.textContent='Escribe tu correo electrónico y vuelve a intentarlo.';return;}
+  button.disabled=true;err.textContent='';
+  sb.auth.resetPasswordForEmail(mail,{redirectTo:window.location.origin+window.location.pathname}).then(function(r){button.disabled=false;if(r.error){err.textContent=errText(r.error);return;}err.textContent='Te enviamos un enlace seguro para restablecer la contraseña.';}).catch(function(e){button.disabled=false;err.textContent=errText(e);});
+}
+function openRecoveryPassword(){
+  if(!sb)return;
+  var box=$('#authBox'),pw=h('input',{class:'input',type:'password',minlength:'8',autocomplete:'new-password',placeholder:'Nueva contraseña (mínimo 8 caracteres)','aria-label':'Nueva contraseña'});
+  var err=h('div',{class:'err',role:'alert'}),go=h('button',{class:'btn primary',type:'submit',text:'Guardar contraseña'});
+  var form=h('form',{novalidate:true},h('h2',{class:'card-title',text:'Restablecer contraseña'}),pw,err,go);
+  form.addEventListener('submit',function(ev){ev.preventDefault();if(pw.value.length<8){err.textContent='La contraseña necesita al menos 8 caracteres.';return;}go.disabled=true;sb.auth.updateUser({password:pw.value}).then(function(r){go.disabled=false;if(r.error){err.textContent=errText(r.error);return;}box.hidden=true;toast('Contraseña actualizada.');}).catch(function(e){go.disabled=false;err.textContent=errText(e);});});
+  box.replaceChildren(h('div',{class:'card'},form));box.hidden=false;
+}
+function openAuth(initialMode){
+  if(!sb){toast('La cuenta no está configurada todavía. Revisa config.js y Supabase.');return;}
+  var box=$('#authBox'),mode=initialMode==='up'?'up':'in';
   var title=h('h2',{class:'card-title'});
   var em=h('input',{class:'input',id:'a-mail',type:'email',autocomplete:'email',inputmode:'email',autocapitalize:'none',autocorrect:'off',placeholder:'correo@ejemplo.com','aria-label':'Correo'});
   var pw=h('input',{class:'input',id:'a-pass',type:'password',placeholder:'Contraseña (mínimo 8 caracteres)','aria-label':'Contraseña'});
@@ -1225,14 +1347,17 @@ function openAuth(){
   var go=h('button',{class:'btn primary',type:'submit'});
   var sw=h('button',{class:'btn sm',type:'button'});
   var cancel=h('button',{class:'btn sm',type:'button',text:'Cancelar',onclick:function(){box.hidden=true;}});
+  var forgot=h('button',{class:'btn sm',type:'button',text:'He olvidado mi contraseña'});
+  forgot.addEventListener('click',function(){requestPasswordReset(em.value.trim(),err,forgot);});
   function label(){
     title.textContent=mode==='in'?'Iniciar sesión':'Crear cuenta';
     go.textContent=mode==='in'?'Entrar':'Crear cuenta';
-    sw.textContent=mode==='in'?'No tengo cuenta':'Ya tengo cuenta';
+    sw.textContent=mode==='in'?'Crear cuenta nueva':'Ya tengo cuenta';
+    forgot.hidden=mode!=='in';
     pw.setAttribute('autocomplete',mode==='in'?'current-password':'new-password');
   }
   sw.addEventListener('click',function(){mode=mode==='in'?'up':'in';err.textContent='';label();});
-  var form=h('form',{novalidate:true},title,em,pw,err,go,h('div',{class:'row'},sw,cancel));
+  var form=h('form',{novalidate:true},title,em,pw,err,go,forgot,h('div',{class:'row'},sw,cancel));
   form.addEventListener('submit',function(ev){
     ev.preventDefault();
     var mail=em.value.trim(),pass=pw.value;
@@ -1244,7 +1369,7 @@ function openAuth(){
       go.disabled=false;
       if(r.error){err.textContent=errText(r.error);return;}
       if(mode==='up'&&!(r.data&&r.data.session)){err.textContent='Cuenta creada. Confirma el correo que te hemos enviado y luego inicia sesión.';mode='in';label();return;}
-      box.hidden=true;toast('Sesión iniciada.');
+      localStorage.setItem('sml-welcome-seen','1');showWelcome(true);box.hidden=true;toast('Sesión iniciada.');
     }).catch(function(e){go.disabled=false;err.textContent=errText(e);});
   });
   label();
@@ -1267,23 +1392,28 @@ function confirmSignOut(){
     msg.textContent=n?('Quedan '+n+(n===1?' cambio':' cambios')+' sin subir. Si sales ahora se perderán en este dispositivo.'):'Tus sitios siguen en tu cuenta. Solo se borrarán de este dispositivo.';
   });
 }
+$('#welcomeLogin').addEventListener('click',function(){openAuth('in');});
+$('#welcomeSignup').addEventListener('click',function(){openAuth('up');});
+$('#welcomeGuest').addEventListener('click',function(){localStorage.setItem('sml-welcome-seen','1');showWelcome(false);});
 function initSync(){
   var c=window.SML_CONFIG||{};
-  if(!c.SUPABASE_URL||!c.SUPABASE_ANON_KEY){syncState='nocfg';renderAcct();return;}
-  if(!window.supabase){syncState='nolib';renderAcct();return;}
-  sb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  if(!c.SUPABASE_URL||!c.SUPABASE_ANON_KEY){syncState='nocfg';renderAcct();showWelcome(false);return;}
+  if(!window.supabase){syncState='nolib';renderAcct();showWelcome(false);return;}
+  sb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   syncState='idle';
   sb.auth.onAuthStateChange(function(ev,s){
     var was=session;session=s;if(s)meId=s.user.id;
     setTimeout(function(){
       if(s&&(!was||was.user.id!==s.user.id)){startRealtime();scheduleSync(0);}
       if(!s)stopRealtime();
+      showWelcome(!!s);
+      if(ev==='PASSWORD_RECOVERY')openRecoveryPassword();
       renderAcct();
     },0);
   });
   sb.auth.getSession().then(function(r){
     if(!session&&r.data&&r.data.session){session=r.data.session;meId=session.user.id;startRealtime();syncNow();}
-    renderAcct();
+    showWelcome(!!session);renderAcct();
   });
   document.addEventListener('visibilitychange',function(){if(!document.hidden)syncNow();});
   window.addEventListener('online',function(){syncNow();});
