@@ -1,5 +1,8 @@
-SOBRE MIS RUTAS (versión 3: sincroniza tus dispositivos y comparte con otras personas)
+MIS RUTAS (versión 4: pantalla de bienvenida, perfil, recuperar contraseña y tipos de mapa)
 =======================================================================================
+
+Si ya tenías la versión 3 funcionando, solo tienes que hacer la PARTE 1 (subir los archivos),
+volver a ejecutar supabase.sql (PARTE 2, paso 1 a 7) y hacer la PARTE 7 (enlaces y correos).
 
 Archivos de esta carpeta: index.html, config.js, sw.js, manifest.webmanifest, supabase.sql,
 apple-touch-icon.png, icon-192.png, icon-512.png y este LEEME.txt.
@@ -133,3 +136,61 @@ OTRAS COSAS ÚTILES
  - Importar rutas: exporta la actividad de Strava, Garmin Connect o Suunto como GPX (o TCX), guárdala en
    Archivos y usa menú ☰ > "Importar ruta".
  - Tras subir una versión nueva a GitHub, cierra la app del todo y ábrela dos veces para ver los cambios.
+
+-----------------------------------------------------------------------------------------
+PARTE 7. RECUPERAR LA CONTRASEÑA POR CORREO
+-----------------------------------------------------------------------------------------
+ La app envía un correo con un ENLACE. Al abrirlo, la persona elige ella misma una contraseña nueva.
+ No se envían contraseñas por correo: sería inseguro (cualquiera que lea el correo la vería).
+
+ A) Decirle a Supabase cuál es la dirección de tu app (obligatorio):
+  1. En Supabase pulsa el candado (Authentication) > "URL Configuration".
+  2. En "Site URL" escribe la dirección de tu app, por ejemplo:
+     https://matumbomatute-cloud.github.io/mis-rutas/
+     (comprueba la tuya en GitHub > Settings > Pages) y pulsa "Save changes".
+  3. En "Redirect URLs" pulsa "Add URL", escribe esa misma dirección seguida de ** , por ejemplo:
+     https://matumbomatute-cloud.github.io/mis-rutas/**
+     y pulsa "Save URLs".
+
+ B) Los correos de Supabase sin configurar tienen límites (obligatorio si quieres que le llegue a otras personas):
+  El envío de correo que trae Supabase de serie solo envía a los correos de TU equipo de Supabase (el tuyo)
+  y muy pocos por hora. Para que funcione con tus amigos hay que conectar un correo propio. Lo más fácil es Gmail:
+  1. En tu cuenta de Google: myaccount.google.com > "Seguridad" > activa la "Verificación en dos pasos".
+  2. En esa misma página busca "Contraseñas de aplicaciones". Ponle el nombre "Mis Rutas" y pulsa "Crear".
+     Google te muestra 16 letras. Cópialas (solo se ven una vez).
+  3. En Supabase: Authentication > "Emails" > pestaña "SMTP Settings" (si no la ves, usa el buscador del panel
+     y escribe SMTP). Activa "Enable custom SMTP" y rellena:
+       Sender email:  tu correo de Gmail
+       Sender name:   Mis Rutas
+       Host:          smtp.gmail.com
+       Port number:   465
+       Username:      tu correo de Gmail
+       Password:      las 16 letras de la contraseña de aplicación
+     Pulsa "Save".
+
+ C) Poner el correo en español (opcional):
+  1. Authentication > "Emails" > pestaña "Templates" > "Reset password".
+  2. En "Subject" escribe:  Restablece tu contraseña de Mis Rutas
+  3. En el cuerpo (Message body) borra lo que hay y pega:
+
+     <h2>Restablece tu contraseña</h2>
+     <p>Has pedido cambiar tu contraseña de Mis Rutas. Pulsa el botón para elegir una nueva:</p>
+     <p><a href="{{ .ConfirmationURL }}">Elegir contraseña nueva</a></p>
+     <p>Si no lo has pedido tú, ignora este mensaje: tu contraseña no cambiará.</p>
+
+     y pulsa "Save changes". No cambies {{ .ConfirmationURL }}: es el enlace que genera Supabase.
+
+ D) Probarlo: en la pantalla de bienvenida pulsa "¿Olvidaste tu contraseña?", escribe tu correo,
+    abre el correo (mira también "Spam") y pulsa el enlace. La app se abre y te pide la contraseña nueva.
+
+-----------------------------------------------------------------------------------------
+PARTE 8. TU PERFIL Y EL TIPO DE MAPA
+-----------------------------------------------------------------------------------------
+ - Pulsa tu círculo (arriba a la derecha) para abrir "Mi perfil": nombre, apellidos, foto, sexo, fecha de
+   nacimiento, cambiar correo y cambiar contraseña. El sexo y la fecha de nacimiento son privados.
+   Arriba verás "Hola" y tu nombre.
+ - Cambiar el correo: si en Supabase tienes "Confirm email" desactivado, cambia al momento. Si no, te pedirá confirmar
+   con un enlace que llega al correo nuevo.
+ - Tipo de mapa: el botón con capas (abajo a la izquierda, bajo el de ubicación) permite elegir
+   Predeterminado, Satélite, Híbrido (satélite con nombres) y Relieve (curvas de nivel y sombreado de montañas).
+   Se recuerda tu elección en ese dispositivo. Los mapas que ya has visto funcionan sin cobertura.

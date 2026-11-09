@@ -145,3 +145,29 @@ create policy "photos update" on storage.objects for update
   with check (bucket_id = 'photos' and public.can_write_owner((storage.foldername(name))[1]));
 create policy "photos delete" on storage.objects for delete
   using (bucket_id = 'photos' and public.can_write_owner((storage.foldername(name))[1]));
+
+-- 8) Fotos de perfil (avatares): privadas, cada persona solo en su carpeta ----------
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', false)
+on conflict (id) do nothing;
+
+drop policy if exists "avatars own" on storage.objects;
+create policy "avatars own" on storage.objects for all
+  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- 9) Si alguien cambia su correo, se actualiza en la lista de personas con quien comparte -----
+create or replace function public.sync_share_emails()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if new.email is distinct from old.email then
+    update public.shares set owner_email = new.email where owner_id = new.id;
+    update public.shares set shared_email = new.email where shared_with = new.id;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_email_change on auth.users;
+create trigger on_auth_email_change after update of email on auth.users
+for each row execute function public.sync_share_emails();
