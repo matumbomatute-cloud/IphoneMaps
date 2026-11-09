@@ -5,3 +5,4 @@ window.SML_CONFIG = {
   SUPABASE_URL: 'https://lazintrwuhsepiiwckyd.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_cdIA0RIUtq6wf69Vf3MPmQ_g3ucONyx'
 };
+ 
